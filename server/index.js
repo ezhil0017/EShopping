@@ -6,6 +6,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import userRouter from './routes/userRouter.js';
 
 const app = express();
 //! allows you to control which websites can access your server's resources
@@ -29,6 +30,8 @@ app.use(
 );
 
 const PORT = 3000 || process.env.PORT;
+
+app.use('/api/user', userRouter);
 
 connectDb()
   .then(() => {
