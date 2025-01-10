@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   loginUserController,
   registerUserConrtoller,
+  updateUserController,
   uploadAvatar,
   userLogOutController,
 } from '../controllers/userController.js';
@@ -12,11 +13,12 @@ const userRouter = Router();
 
 userRouter.post('/register', registerUserConrtoller);
 userRouter.post('/login', loginUserController);
-userRouter.get('/logout', authUser, userLogOutController);
+userRouter.get('/logout', userLogOutController);
 userRouter.put(
   '/upload-avatar',
   authUser,
   upload.single('avatar'),
   uploadAvatar
 );
+userRouter.put('/update-user', authUser, updateUserController);
 export default userRouter;

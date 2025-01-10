@@ -125,8 +125,6 @@ export const loginUserController = async (req, res) => {
 
 export const userLogOutController = async (req, res) => {
   try {
-    const user = req.user;
-    console.log(user);
     res.cookie('token', null, { expires: new Date(Date.now()) });
     return res.status(200).json({
       message: 'Logged Out Successfully',
@@ -158,6 +156,34 @@ export const uploadAvatar = async (req, res) => {
         _id: userId,
         avatar: upload.url,
       },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
+export const updateUserController = async (req, res) => {
+  try {
+    const { name, email, mobile } = req.body;
+    const userId = req.user._id;
+    const updateFields = {
+      ...(name && { name: name }),
+      ...(email && { email: email }),
+      ...(mobile && { mobile: mobile }),
+    };
+    const updtUser = await UserModel.findByIdAndUpdate(userId, updateFields, {
+      returnDocument: 'after',
+    });
+
+    return res.status(200).json({
+      message: 'User Updated Successfully',
+      error: false,
+      success: true,
+      data: updtUser,
     });
   } catch (error) {
     return res.status(500).json({
