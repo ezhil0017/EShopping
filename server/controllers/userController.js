@@ -3,6 +3,7 @@ import UserModel from '../models/userModel.js';
 import bcrypt from 'bcrypt';
 import verifyEmailTemplate from '../utils/verifyEmailTemplate.js';
 import jwt from 'jsonwebtoken';
+import uploadImageClodinary from '../utils/uploadImageCloudinary.js';
 
 export const registerUserConrtoller = async (req, res) => {
   try {
@@ -131,6 +132,32 @@ export const userLogOutController = async (req, res) => {
       message: 'Logged Out Successfully',
       error: false,
       success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
+export const uploadAvatar = async (req, res) => {
+  try {
+    //! auth middleware
+    const userId = req.user._id;
+    //! multer middleware
+    const image = req.file;
+    const upload = await uploadImageClodinary(image);
+    const updtUser = await UserModel.findByIdAndUpdate(userId, {
+      avatar: upload.url,
+    });
+    return res.json({
+      message: 'upload profile',
+      data: {
+        _id: userId,
+        avatar: upload.url,
+      },
     });
   } catch (error) {
     return res.status(500).json({
