@@ -193,3 +193,52 @@ export const updateUserController = async (req, res) => {
     });
   }
 };
+
+export const resetPasswordController = async (req, res) => {
+  try {
+    const { email, password: newPassword, confirmPassword } = req.body;
+
+    if (!email || !newPassword || !confirmPassword) {
+      return res.status(400).json({
+        message: 'Please provide email,password,confirmPassword',
+        error: true,
+        success: false,
+      });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        message: 'password and confirmPasword Should be Same',
+        error: true,
+        success: false,
+      });
+    }
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json({
+        message: 'Invalid Email',
+        error: true,
+        success: false,
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    const updateUser = await UserModel.findByIdAndUpdate(user._id, {
+      password: hashedPassword,
+    });
+
+    return res.status(200).json({
+      message: 'password changed successfully',
+      error: false,
+      success: true,
+      data: updateUser,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
