@@ -1,9 +1,15 @@
+import { Outlet } from 'react-router-dom';
+import Header from './components/Header';
+import Footer from './components/Footer';
+
 function App() {
   return (
     <>
-      <h1 className='text-4xl italic text-orange-600'>
-        Welcome to NEw Journey
-      </h1>
+      <Header />
+      <div className='min-h-[68vh]'>
+        <Outlet />
+      </div>
+      <Footer />
     </>
   );
 }
