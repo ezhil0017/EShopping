@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { FaEyeSlash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
-
+import { SummaryApi } from '../../common/summaryApi.js';
+import Axios from '../utils/Axios.js';
+import AxiosToastError from '../utils/AxiosToastError.js';
+import { Link, useNavigate } from 'react-router-dom';
 const Register = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState({
     name: '',
     email: '',
@@ -25,11 +29,32 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (data.password !== data.confirmPassword) {
       toast.error('password and confirm password must be same');
       return;
+    }
+    try {
+      const response = await Axios({
+        ...SummaryApi.register,
+        data: data,
+      });
+      if (response.data.error) {
+        toast.error(response.data.message);
+      }
+      if (response.data.success) {
+        toast.success(response.data.message);
+        setData({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+        });
+      }
+      navigate('/login');
+    } catch (error) {
+      AxiosToastError(error);
     }
   };
   return (
@@ -110,6 +135,15 @@ const Register = () => {
             Register
           </button>
         </form>
+        <p>
+          Already have an account ?
+          <Link
+            to={'/login'}
+            className='font-semibold text-green-700 hover:text-green-800'
+          >
+            Login
+          </Link>
+        </p>
       </div>
     </section>
   );
