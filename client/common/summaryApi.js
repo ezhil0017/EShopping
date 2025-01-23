@@ -1,0 +1,10 @@
+const baseURL = 'http://localhost:3000';
+
+const SummaryApi = {
+  register: {
+    url: '/api/user/register',
+    method: 'post',
+  },
+};
+
+export default SummaryApi;

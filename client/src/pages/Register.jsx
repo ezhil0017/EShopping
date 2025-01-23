@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { FaEyeSlash } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const Register = () => {
   const [data, setData] = useState({
@@ -23,11 +24,19 @@ const Register = () => {
       };
     });
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (data.password !== data.confirmPassword) {
+      toast.error('password and confirm password must be same');
+      return;
+    }
+  };
   return (
     <section className='container w-full px-2 mx-auto'>
       <div className='w-full max-w-lg p-4 mx-auto my-4 bg-white rounded'>
         <p>Welcome to Blinkeyit</p>
-        <form className='grid gap-4 mt-6'>
+        <form className='grid gap-4 mt-6' onSubmit={handleSubmit}>
           <div className='grid gap-1'>
             <label htmlFor='name'>Name :</label>
             <input
@@ -93,9 +102,10 @@ const Register = () => {
             </div>
           </div>
           <button
+            disabled={!validateValues}
             className={`${
-              validateValues ? 'bg-green-800' : 'bg-gray-500'
-            } py-2 my-3 font-semibold tracking-wide text-white rounded `}
+              validateValues ? 'bg-green-800 hover:bg-green-700' : 'bg-gray-500'
+            } py-2 my-3 font-semibold tracking-wide text-white rounded p-6`}
           >
             Register
           </button>
