@@ -4,7 +4,8 @@ import bcrypt from 'bcrypt';
 import verifyEmailTemplate from '../utils/verifyEmailTemplate.js';
 import jwt from 'jsonwebtoken';
 import uploadImageClodinary from '../utils/uploadImageCloudinary.js';
-
+import generatedRefreshToken from '../utils/generatedRefreshToken.js';
+import generateAccessToken from '../utils/generateAccessToken.js';
 export const registerUserConrtoller = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -91,21 +92,32 @@ export const loginUserController = async (req, res) => {
     if (isPasswordValid) {
       //! Create a JWT token for the user
       //! its creating jwt token --> 1st parameter is data and 2nd is Secret Key it can be anything
-      const token = jwt.sign({ _id: user?._id }, 'Secret@123', {
-        expiresIn: '1h',
-      });
+      // const accessToken = jwt.sign({ _id: user?._id }, 'Secret@123', {
+      //   expiresIn: '1d',
+      // });
+      const accessToken = await generateAccessToken(user._id);
+      const refreshToken = await generatedRefreshToken(user._id);
       //! Adding the token to cookie and sending the response to User
       const cookiesOptions = {
         httpOnly: true,
         secure: true,
         sameSite: 'None',
       };
-      res.cookie('token', token, cookiesOptions);
+      res.cookie('accessToken', accessToken, cookiesOptions);
+      res.cookie('refreshToken', refreshToken, cookiesOptions);
+
+      //! last login time
+      const updateLoginTime = UserModel.findByIdAndUpdate(user?._id, {
+        last_login_date: new Date(),
+      });
       return res.status(200).json({
         message: 'Logged In Successfully',
         error: false,
         success: true,
-        data: user,
+        data: {
+          accesstoken,
+          refreshToken,
+        },
       });
     } else {
       return res.status(500).json({
@@ -123,6 +135,7 @@ export const loginUserController = async (req, res) => {
   }
 };
 
+//! Logout Controller
 export const userLogOutController = async (req, res) => {
   try {
     res.cookie('token', null, { expires: new Date(Date.now()) });
@@ -234,6 +247,27 @@ export const resetPasswordController = async (req, res) => {
       success: true,
       data: updateUser,
     });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
+//! Refresh Token Controller
+export const refreshToken = async (req, res) => {
+  try {
+    const refreshToken =
+      req?.cookies?.refreshToken || req?.header?.authorization?.split(' '); /// [Bearer token]
+    if (!refreshToken) {
+      return res.status(401).json({
+        message: 'Invalid Token',
+        error: true,
+        success: false,
+      });
+    }
   } catch (error) {
     return res.status(500).json({
       message: error.message || error,

@@ -40,13 +40,13 @@ const Login = () => {
       if (response.data.success) {
         toast.success(response.data.message);
         //  localStorage.setItem('token', response.data.data.token);
-        console.log(response.data.data.token);
+        console.log(response.data);
         setData({
           name: '',
           email: '',
         });
       }
-      navigate('/');
+      // navigate('/');
     } catch (error) {
       AxiosToastError(error);
     }

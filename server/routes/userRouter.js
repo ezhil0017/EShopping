@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   loginUserController,
+  refreshToken,
   registerUserConrtoller,
   resetPasswordController,
   updateUserController,
@@ -23,4 +24,5 @@ userRouter.put(
 );
 userRouter.put('/update-user', authUser, updateUserController);
 userRouter.put('/reset-password', resetPasswordController);
+userRouter.post('/refresh-token', refreshToken);
 export default userRouter;
