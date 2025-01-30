@@ -17,7 +17,6 @@ const Login = () => {
   const validateValues = Object.values(data).every((val) => val);
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(e.target.name);
     setData((prev) => {
       return {
         ...prev,
@@ -39,8 +38,10 @@ const Login = () => {
       }
       if (response.data.success) {
         toast.success(response.data.message);
-        //  localStorage.setItem('token', response.data.data.token);
-        console.log(response.data);
+        localStorage.setItem('accessToken', response.data.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.data.refreshToken);
+
+        navigate('/');
         setData({
           name: '',
           email: '',
@@ -54,7 +55,7 @@ const Login = () => {
   return (
     <section className='container w-full px-2 mx-auto'>
       <div className='w-full max-w-lg p-4 mx-auto my-4 bg-white rounded'>
-        <form className='grid gap-4 my-2 my-6' onSubmit={handleSubmit}>
+        <form className='grid gap-4 my-6' onSubmit={handleSubmit}>
           <div className='grid gap-1'>
             <label htmlFor='name'>Email :</label>
             <input
@@ -73,7 +74,6 @@ const Login = () => {
               <input
                 type={showPassword ? 'text' : 'password'}
                 id='password'
-                autoFocus
                 name='password'
                 className='w-full outline-none'
                 value={data.password}
