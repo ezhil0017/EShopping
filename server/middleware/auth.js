@@ -16,15 +16,16 @@ export const authUser = async (req, res, next) => {
       accessToken,
       process.env.SECRET_KEY_ACCESS_TOKEN
     );
-    const user = await UserModel.findById({ _id: decodedVal?._id });
-    if (!user) {
+    // const user = await UserModel.findById({ _id: decodedVal?._id });
+    if (!decodedVal) {
       return res.status(500).json({
         message: 'UnAuthorized Access',
         error: true,
         success: false,
       });
     }
-    req.user = user;
+    req.userId = decodedVal._id;
+    console.log('decodedValue: ', decodedVal);
     next();
   } catch (error) {
     return res.status(500).json({

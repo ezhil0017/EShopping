@@ -105,17 +105,28 @@ export const loginUserController = async (req, res) => {
       };
       res.cookie('accessToken', accessToken, cookiesOptions);
       res.cookie('refreshToken', refreshToken, cookiesOptions);
+      // Get current time in IST as a Date object
+      const ISTTime = new Date().toLocaleString('en-US', {
+        timeZone: 'Asia/Kolkata',
+      });
 
+      // Convert the formatted IST time back to a Date object
+      const ISTDate = new Date(ISTTime);
+
+      // Update last login time in the database
+      await UserModel.findByIdAndUpdate(user._id, {
+        last_login_date: ISTDate,
+      });
       //! last login time
-      const updateLoginTime = UserModel.findByIdAndUpdate(user?._id, {
-        last_login_date: new Date(),
+      const updateLoginTime = await UserModel.findByIdAndUpdate(user?._id, {
+        last_login_date: ISTTime,
       });
       return res.status(200).json({
         message: 'Logged In Successfully',
         error: false,
         success: true,
         data: {
-          accesstoken,
+          accessToken,
           refreshToken,
         },
       });
@@ -138,9 +149,16 @@ export const loginUserController = async (req, res) => {
 //! Logout Controller
 export const userLogOutController = async (req, res) => {
   try {
-    res.cookie('token', null, { expires: new Date(Date.now()) });
-    return res.status(200).json({
-      message: 'Logged Out Successfully',
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    };
+    res.clearCookie('accessToken', cookieOptions);
+    res.clearCookie('refreshToken', cookieOptions);
+
+    return res.json({
+      message: 'Logout successfully',
       error: false,
       success: true,
     });
@@ -156,7 +174,7 @@ export const userLogOutController = async (req, res) => {
 export const uploadAvatar = async (req, res) => {
   try {
     //! auth middleware
-    const userId = req.user._id;
+    const userId = req.userId;
     //! multer middleware
     const image = req.file;
     const upload = await uploadImageClodinary(image);
@@ -182,12 +200,13 @@ export const uploadAvatar = async (req, res) => {
 export const updateUserController = async (req, res) => {
   try {
     const { name, email, mobile } = req.body;
-    const userId = req.user._id;
+    const userId = req.userId;
     const updateFields = {
       ...(name && { name: name }),
       ...(email && { email: email }),
       ...(mobile && { mobile: mobile }),
     };
+    console.log(userId);
     const updtUser = await UserModel.findByIdAndUpdate(userId, updateFields, {
       returnDocument: 'after',
     });
@@ -268,6 +287,33 @@ export const refreshToken = async (req, res) => {
         success: false,
       });
     }
+    const verifyToken = await jwt.verify(
+      refreshToken,
+      process.env.SECRET_KEY_ACCESS_TOKEN
+    );
+    const userId = verifyToken?._id;
+    if (!verifyToken) {
+      return res.status(401).json({
+        message: 'Token is expired',
+        error: true,
+        success: false,
+      });
+    }
+    const newAccessToken = await generateAccessToken(userId);
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    };
+    res.cookie('accessToken', newAccessToken, cookieOptions);
+    return res.json({
+      message: 'New Access Token Generated',
+      error: false,
+      success: true,
+      data: {
+        newAccessToken,
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       message: error.message || error,
