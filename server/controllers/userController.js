@@ -322,3 +322,28 @@ export const refreshToken = async (req, res) => {
     });
   }
 };
+
+//! get login user details
+
+export const getUserDetails = async (req, res) => {
+  try {
+    const userId = req.userId;
+    console.log(userId);
+    const userDtls = await UserModel.findById(userId).select(
+      '-password -refresh_token'
+    );
+    console.log(userDtls);
+    return res.json({
+      message: 'user Details',
+      error: false,
+      success: true,
+      data: userDtls,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
