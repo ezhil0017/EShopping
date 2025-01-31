@@ -5,13 +5,17 @@ import { FaRegUserCircle } from 'react-icons/fa';
 import useMobile from '../hooks/useMobile';
 import { BsCart4 } from 'react-icons/bs';
 import { useSelector } from 'react-redux';
+import { GoTriangleDown, GoTriangleUp } from 'react-icons/go';
+import { useState } from 'react';
+import UserMenu from './UserMenu';
 
 const Header = () => {
   const [isMobile] = useMobile();
   const location = useLocation(); // Corrected typo here
   const navigate = useNavigate();
   const isSearchPage = location.pathname === '/search';
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state?.user);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   console.log('from user store', user);
   const redirectToLoginPage = () => {
@@ -56,12 +60,6 @@ const Header = () => {
 
             {/** Desktop */}
             <div className='items-center hidden gap-10 lg:flex '>
-              <button
-                className='text-lg cursor-pointer'
-                onClick={redirectToLoginPage}
-              >
-                Login
-              </button>
               <button className='flex items-center gap-2 px-3 py-2 text-white bg-green-700 rounded-sm hover:bg-green-800'>
                 {/**add to cart icons */}
                 <div className='animate-bounce'>
