@@ -279,7 +279,7 @@ export const resetPasswordController = async (req, res) => {
 export const refreshToken = async (req, res) => {
   try {
     const refreshToken =
-      req?.cookies?.refreshToken || req?.header?.authorization?.split(' '); /// [Bearer token]
+      req?.cookies?.refreshToken || req?.header?.authorization?.split(' ')[1]; /// [Bearer token]
     if (!refreshToken) {
       return res.status(401).json({
         message: 'Invalid Token',

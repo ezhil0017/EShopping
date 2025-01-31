@@ -9,4 +9,8 @@ export const SummaryApi = {
     url: '/api/user/login',
     method: 'post',
   },
+  refreshToken: {
+    url: '/api/user/refresh-token',
+    method: 'post',
+  },
 };
