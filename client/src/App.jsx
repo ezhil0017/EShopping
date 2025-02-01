@@ -5,7 +5,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
 import fetchUserDetails from './utils/fetchUserDetails';
 import { useDispatch } from 'react-redux';
-import { setUserDetails } from '../store/userSlice';
+import { setUserDetails } from './store/userSlice';
 
 function App() {
   const dispatch = useDispatch();

@@ -17,4 +17,8 @@ export const SummaryApi = {
     url: '/api/user/get-userDetails',
     method: 'get',
   },
+  logout: {
+    url: '/api/user/logout',
+    method: 'get',
+  },
 };

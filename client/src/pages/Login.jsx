@@ -6,8 +6,12 @@ import Axios from '../utils/Axios.js';
 import AxiosToastError from '../utils/AxiosToastError.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import fetchUserDetails from '../utils/fetchUserDetails.js';
+import { useDispatch } from 'react-redux';
+import { setUserDetails } from '../store/userSlice.js';
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [data, setData] = useState({
     email: '',
     password: '',
@@ -41,6 +45,9 @@ const Login = () => {
         localStorage.setItem('accessToken', response.data.data.accessToken);
         localStorage.setItem('refreshToken', response.data.data.refreshToken);
 
+        //! setting user to store after logged in
+        const userDtls = await fetchUserDetails();
+        dispatch(setUserDetails(userDtls.data));
         navigate('/');
         setData({
           name: '',
