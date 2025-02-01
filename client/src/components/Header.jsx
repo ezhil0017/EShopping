@@ -60,6 +60,35 @@ const Header = () => {
 
             {/** Desktop */}
             <div className='items-center hidden gap-10 lg:flex '>
+              {user?._id ? (
+                <div className='relative'>
+                  <div
+                    onClick={() => setShowUserMenu((prev) => !prev)}
+                    className='flex items-center gap-2 cursor-pointer select-none'
+                  >
+                    <p>Account</p>
+                    {showUserMenu ? (
+                      <GoTriangleUp size={25} />
+                    ) : (
+                      <GoTriangleDown size={25} />
+                    )}
+                  </div>
+                  {showUserMenu && (
+                    <div className='absolute right-0 top-12'>
+                      <div className='p-4 bg-white rounded min-w-52 lg:shadow-lg'>
+                        <UserMenu />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  className='text-lg cursor-pointer'
+                  onClick={redirectToLoginPage}
+                >
+                  Login
+                </button>
+              )}
               <button className='flex items-center gap-2 px-3 py-2 text-white bg-green-700 rounded-sm hover:bg-green-800'>
                 {/**add to cart icons */}
                 <div className='animate-bounce'>
