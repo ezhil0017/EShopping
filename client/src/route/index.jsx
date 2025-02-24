@@ -5,6 +5,7 @@ import SearchPage from '../pages/SearchPage';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import ForgotPassword from '../pages/ForgotPassword';
+import UserMenuMobile from '../pages/userMenuMobile';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: 'forgot-password',
         element: <ForgotPassword />,
+      },
+      {
+        path: 'user',
+        element: <UserMenuMobile />,
       },
     ],
   },

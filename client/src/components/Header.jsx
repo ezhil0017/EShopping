@@ -21,7 +21,16 @@ const Header = () => {
   const redirectToLoginPage = () => {
     navigate('/login');
   };
-
+  const handleCloseUserMenu = () => {
+    setShowUserMenu(false);
+  };
+  const handleMobileUser = () => {
+    if (!user._id) {
+      navigate('/login');
+      return;
+    }
+    navigate('user');
+  };
   return (
     <header className='sticky top-0 z-40 flex flex-col justify-center h-24 gap-1 bg-white lg:h-20 lg:shadow-md'>
       {!(isSearchPage && isMobile) && (
@@ -54,7 +63,10 @@ const Header = () => {
           {/* Login and My Cart */}
           <div className=''>
             {/* User icon display only in mobile version */}
-            <button className='text-neutral-600 lg:hidden'>
+            <button
+              className='text-neutral-600 lg:hidden'
+              onClick={handleMobileUser}
+            >
               <FaRegUserCircle size={26} />
             </button>
 
@@ -76,7 +88,7 @@ const Header = () => {
                   {showUserMenu && (
                     <div className='absolute right-0 top-12'>
                       <div className='p-4 bg-white rounded min-w-52 lg:shadow-lg'>
-                        <UserMenu />
+                        <UserMenu close={handleCloseUserMenu} />
                       </div>
                     </div>
                   )}
